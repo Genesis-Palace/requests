@@ -2,9 +2,7 @@
 Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
  You may obtain a copy of the License at
-
      http://www.apache.org/licenses/LICENSE-2.0
-
  Unless required by applicable law or agreed to in writing, software
  distributed under the License is distributed on an "AS IS" BASIS,
  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -331,12 +329,81 @@ func Post(origurl string, args ...interface{}) (resp *Response, err error) {
 	return resp, err
 }
 
+
+func PostJson(origurl string, args ...interface{}) (resp *Response, err error) {
+	req := Requests()
+
+	// call request Get
+	resp, err = req.PostJson(origurl, args...)
+	return resp, err
+}
+
 // POST requests
+
+
+func (req *Request) PostJson(origurl string, args ...interface{}) (resp *Response, err error) {
+
+	req.httpreq.Method = "POST"
+	req.Header.Add("Content-Type", "application/json")
+
+	//set Header
+	raw := "{}"
+	//reset Cookies,
+	//Client.Do can copy cookie from client.Jar to req.Header
+	delete(req.httpreq.Header, "Cookie")
+
+	for _, arg := range args {
+		switch a := arg.(type) {
+		// arg is Header , set to request header
+		case Header:
+
+			for k, v := range a {
+				req.Header.Set(k, v)
+			}
+		case string:
+			raw = arg.(string)
+		case Auth:
+			// a{username,password}
+			req.httpreq.SetBasicAuth(a[0], a[1])
+		}
+	}
+
+	if len(raw) > 0 {
+		req.setBodyRawBytes(raw) // set raw to body
+	}
+	//prepare to Do
+	URL, err := url.Parse(origurl)
+	if err != nil {
+		return nil, err
+	}
+	req.httpreq.URL = URL
+
+	req.ClientSetCookies()
+
+	req.RequestDebug()
+
+	res, err := req.Client.Do(req.httpreq)
+
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	resp = &Response{}
+	resp.R = res
+	resp.req = req
+	resp.ResponseDebug()
+	return resp, nil
+}
+
+
 
 func (req *Request) Post(origurl string, args ...interface{}) (resp *Response, err error) {
 
 	req.httpreq.Method = "POST"
-	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	if req.Header.Get("Content-Type") == ""{
+	    req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	}
 
 	// set params ?a=b&b=c
 	//set Header
@@ -414,6 +481,17 @@ func (req *Request) setBodyBytes(Forms url.Values) {
 	req.httpreq.ContentLength = int64(len(data))
 }
 
+
+// only set forms
+func (req *Request) setBodyRawBytes(raw string) {
+
+
+	req.httpreq.Body = ioutil.NopCloser(strings.NewReader(raw))
+	req.httpreq.ContentLength = int64(len(raw))
+}
+
+
+
 // upload file and form
 // build to body format
 func (req *Request) buildFilesAndForms(files []map[string]string, datas []map[string]string) {
@@ -470,5 +548,4 @@ func openFile(filename string) *os.File {
 	if err != nil {
 		panic(err)
 	}
-	return r
 }
