@@ -548,4 +548,5 @@ func openFile(filename string) *os.File {
 	if err != nil {
 		panic(err)
 	}
+	return r
 }
