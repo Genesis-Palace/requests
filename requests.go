@@ -550,3 +550,12 @@ func openFile(filename string) *os.File {
 	}
 	return r
 }
+
+func NewRequest() Request{
+    req := Requests()
+    req.Header.Set("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8")
+    req.Header.Set("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.13; rv:69.0) Gecko/20100101 Firefox/69.0")
+    req.Header.Set("Connection", "keep-alive")
+    return req
+}
+
