@@ -13,9 +13,6 @@ Requests is an HTTP library  , it is easy to use. Similar to Python requests.
 
 # Installation
 
-```
-go get -u 
-```
 
 ```
 go get -u github.com/Genesis-Palace/requests
