@@ -1,6 +1,12 @@
 
 [![license](http://dmlc.github.io/img/apache2.svg)](https://raw.githubusercontent.com/asmcos/requests/master/LICENSE)
 
+# 原项目 : github.com/asmcos/requests
+
+## 由于原作者基本不维护. fork项目后, 独立维护的requests项目
+
+
+
 # requests
 
 Requests is an HTTP library  , it is easy to use. Similar to Python requests.
@@ -8,7 +14,11 @@ Requests is an HTTP library  , it is easy to use. Similar to Python requests.
 # Installation
 
 ```
-go get -u github.com/asmcos/requests
+go get -u 
+```
+
+```
+go get -u github.com/Genesis-Palace/requests
 ```
 
 # Start
@@ -16,7 +26,7 @@ go get -u github.com/asmcos/requests
 ``` go
 package main
 
-import "github.com/asmcos/requests"
+import "github.com/Genesis-Palace/requests"
 
 func main (){
 
@@ -33,7 +43,7 @@ func main (){
 ``` go
 package main
 
-import "github.com/asmcos/requests"
+import "github.com/Genesis-Palace/requests"
 
 
 func main (){
@@ -194,3 +204,12 @@ for _, c:= range coo{
   fmt.Println(c.Name,c.Value)
 }
 ```
+
+
+
+
+### modify(在原有基础上进行一定的优化):
+* 支持postJson(合并于原pull request代码)
+* 修改post时header中ContentType默认为form
+
+### 项目会持续维护(by 2019.10.11 17:40:00)
