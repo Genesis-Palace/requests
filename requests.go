@@ -132,7 +132,6 @@ func (req *Request) Get(origurl string, args ...interface{}) (resp *Response, er
 	res, err := req.Client.Do(req.httpreq)
 
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
