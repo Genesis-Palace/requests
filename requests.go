@@ -67,7 +67,6 @@ func Requests() *Request {
 		ProtoMinor: 1,
 	}
 	req.Header = &req.httpreq.Header
-	req.httpreq.Header.Set("User-Agent", "Go-Requests "+VERSION)
 
 	req.Client = &http.Client{}
 
