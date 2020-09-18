@@ -329,24 +329,9 @@ func Post(origurl string, args ...interface{}) (resp *Response, err error) {
 
 
 func PostJson(origurl string, args ...interface{}) (resp *Response, err error) {
-	req := Requests()
-
-	// call request Get
-	resp, err = req.PostJson(origurl, args...)
-	return resp, err
-}
-
-// POST requests
-
-
-func (req *Request) PostJson(origurl string, args ...interface{}) (resp *Response, err error) {
-
 	req.httpreq.Method = "POST"
 	req.Header.Add("Content-Type", "application/json")
 
-	//set Header
-	raw := "{}"
-	//reset Cookies,
 	//Client.Do can copy cookie from client.Jar to req.Header
 	delete(req.httpreq.Header, "Cookie")
 
@@ -358,17 +343,28 @@ func (req *Request) PostJson(origurl string, args ...interface{}) (resp *Respons
 			for k, v := range a {
 				req.Header.Set(k, v)
 			}
-		case string:
-			raw = arg.(string)
+		case io.Reader:
+			rc, ok := a.(io.ReadCloser)
+			if !ok && a != nil {
+				rc = ioutil.NopCloser(a)
+			}
+			req.httpreq.Body = rc
+			bodyIs, ok := a.(*bytes.Reader)
+			if ok{
+				fmt.Println(bodyIs.Len())
+				req.httpreq.ContentLength = int64(bodyIs.Len())
+				snapshot := bodyIs
+				req.httpreq.GetBody = func() (io.ReadCloser, error) {
+					r := snapshot
+					return ioutil.NopCloser(r), nil
+				}
+			}
 		case Auth:
 			// a{username,password}
 			req.httpreq.SetBasicAuth(a[0], a[1])
 		}
 	}
 
-	if len(raw) > 0 {
-		req.setBodyRawBytes(raw) // set raw to body
-	}
 	//prepare to Do
 	URL, err := url.Parse(origurl)
 	if err != nil {
@@ -379,11 +375,9 @@ func (req *Request) PostJson(origurl string, args ...interface{}) (resp *Respons
 	req.ClientSetCookies()
 
 	req.RequestDebug()
-
 	res, err := req.Client.Do(req.httpreq)
 
 	if err != nil {
-		fmt.Println(err)
 		return nil, err
 	}
 
