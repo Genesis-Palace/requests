@@ -351,7 +351,6 @@ func (req *Request) PostJson(origurl string, args ...interface{}) (resp *Respons
 			req.httpreq.Body = rc
 			bodyIs, ok := a.(*bytes.Reader)
 			if ok{
-				fmt.Println(bodyIs.Len())
 				req.httpreq.ContentLength = int64(bodyIs.Len())
 				snapshot := bodyIs
 				req.httpreq.GetBody = func() (io.ReadCloser, error) {
