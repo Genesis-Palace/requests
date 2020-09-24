@@ -209,4 +209,8 @@ for _, c:= range coo{
 * 支持postJson(合并于原pull request代码)
 * 修改post时header中ContentType默认为form
 
+20200924
+----
+postJson支持二进制传输方式
+
 ### 项目会持续维护(by 2019.10.11 17:40:00)
