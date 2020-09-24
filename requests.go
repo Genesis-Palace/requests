@@ -328,7 +328,7 @@ func Post(origurl string, args ...interface{}) (resp *Response, err error) {
 }
 
 
-func PostJson(origurl string, args ...interface{}) (resp *Response, err error) {
+func (req *Request) PostJson(origurl string, args ...interface{}) (resp *Response, err error) {
 	req.httpreq.Method = "POST"
 	req.Header.Add("Content-Type", "application/json")
 
